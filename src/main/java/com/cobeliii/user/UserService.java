@@ -4,9 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class UserService {
-    private User[] users;
-    private UserArrayDataAccessService data = new UserArrayDataAccessService();
-    //private UserDao userDAO = new UserArrayDataAccessService();
+    private final List<User> users;
+    private UserDataAccessService data = new UserDataAccessService();
 
     public UserService() {
         users = data.getUsers();

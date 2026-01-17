@@ -6,14 +6,15 @@ import com.cobeliii.user.User;
 import com.cobeliii.user.UserService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class BookingService {
-    private final Booking[] bookings;
+    private final List<Booking> bookings;
     private final UserService userService;
     private final CarService carService;
-    private BookingArrayDataAccessService data = new BookingArrayDataAccessService();
+    private final BookingDataAccessService data = new BookingDataAccessService();
 
 
     public BookingService(UserService userService, CarService carService) {
@@ -31,7 +32,7 @@ public class BookingService {
             }
         }
 
-        if(numberOfNullBookings == bookings.length) {
+        if(numberOfNullBookings == bookings.size()) {
             System.out.println("No bookings found");
         }else{
             for (Booking booking : bookings) {
@@ -65,13 +66,7 @@ public class BookingService {
         LocalDateTime now = LocalDateTime.now();
         Booking newBooking = new Booking(userById, carById, now);
 
-
-        for (int i = 0; i < bookings.length; i++) {
-            if(bookings[i] == null) {
-                bookings[i] = newBooking;
-                break;
-            }
-        }
+        bookings.add(newBooking);
 
         carService.setRenterName(userById.getName(), carId);
 
@@ -90,10 +85,10 @@ public class BookingService {
         }
 
 
-        for (int i = 0; i < bookings.length; i++) {
+        for (Booking booking : bookings) {
             try {
-                if (bookings[i].getUser().equals(userByName)) {
-                    System.out.println(bookings[i]);
+                if (booking.getUser().equals(userByName)) {
+                    System.out.println(booking.getCar());
                 }
             } catch (Exception e) {
                 System.out.print("");

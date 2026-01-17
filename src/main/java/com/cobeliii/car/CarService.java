@@ -6,8 +6,8 @@ import java.util.UUID;
 import static com.cobeliii.car.EngineType.Electric;
 
 public class CarService {
-    private final List<Car> cars;
-    private final CarDataAccessService data = new CarDataAccessService();
+    private Car[] cars;
+    private CarArrayDataAccessService data = new CarArrayDataAccessService();
 
     public CarService() {
         this.cars = data.getCars();

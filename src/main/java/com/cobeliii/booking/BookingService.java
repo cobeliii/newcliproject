@@ -10,19 +10,14 @@ import java.util.Scanner;
 import java.util.UUID;
 
 public class BookingService {
-    private Booking[] bookings;
-    private UserService userService;
-    private CarService carService;
-    private BookingDao bookingDAO = new BookingListDataAccessService();
+    private final Booking[] bookings;
+    private final UserService userService;
+    private final CarService carService;
+    private BookingArrayDataAccessService data = new BookingArrayDataAccessService();
 
-//    public BookingService(UserService userService, CarService carService) {
-//        bookings = bookingDAO.getBookings();
-//        this.userService = userService;
-//        this.carService = carService;
-//    }
 
     public BookingService(UserService userService, CarService carService) {
-        this.bookings = bookingDAO.getBookings();
+        this.bookings = data.getBookings();
         this.userService = userService;
         this.carService = carService;
 
@@ -70,13 +65,14 @@ public class BookingService {
         LocalDateTime now = LocalDateTime.now();
         Booking newBooking = new Booking(userById, carById, now);
 
-        //bookings.add(newBooking);
+
         for (int i = 0; i < bookings.length; i++) {
             if(bookings[i] == null) {
                 bookings[i] = newBooking;
                 break;
             }
         }
+
         carService.setRenterName(userById.getName(), carId);
 
         System.out.println("Booking added");

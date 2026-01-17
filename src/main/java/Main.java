@@ -16,8 +16,6 @@ public class Main {
         menu();
         int choice = scanner.nextInt();
         while (choice != 7) {
-            menu();
-            choice = scanner.nextInt();
             switch (choice) {
                 case 1:
                     bookingService.addBooking();
@@ -45,6 +43,8 @@ public class Main {
                     System.out.println("Invalid choice");
                     break;
             }
+            menu();
+            choice = scanner.nextInt();
         }
 
     }

@@ -1,38 +1,31 @@
 package com.cobeliii.user;
 
-import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class UserService {
-    private final List<User> users;
-    private UserDataAccessService data = new UserDataAccessService();
+    private final UserDao userDao;
 
-    public UserService() {
-        users = data.getUsers();
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     public void printUsers() {
-        for (User user : users) {
-            System.out.println(user);
-        }
+        userDao.getUsers().forEach(System.out::println);
     }
 
     public User findUserById(UUID id) {
-        for (User user : users) {
-            if (user.getId().equals(id)){
-                return user;
-            }
-        }
-        return null;
+        Stream<User> user = userDao.getUsers().stream()
+                .filter(u -> u.getId().equals(id));
+
+        return user.findFirst().orElse(null);
     }
 
     public User findUserByName(String name) {
-        for (User user : users) {
-            if (user.getName().equalsIgnoreCase(name)){
-                return user;
-            }
-        }
 
-        return null;
+        Stream<User> user = userDao.getUsers().stream()
+                .filter(u -> u.getName().equalsIgnoreCase(name));
+
+        return user.findFirst().orElse(null);
     }
 }

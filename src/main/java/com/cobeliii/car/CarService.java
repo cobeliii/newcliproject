@@ -2,56 +2,41 @@ package com.cobeliii.car;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
-import static com.cobeliii.car.EngineType.Electric;
+import static com.cobeliii.car.EngineType.ELECTRIC;
 
 public class CarService {
-    private final List<Car> cars;
-    private final CarDataAccessService data = new CarDataAccessService();
+    private final CarDao carDao;
 
-    public CarService() {
-        this.cars = data.getCars();
+    public CarService(CarDao carDao) {
+        this.carDao = carDao;
     }
 
     public void viewAvailableCars(){
-        for (Car car : cars) {
-            if (car.getRenterName() == null){
-                System.out.println(car);
-            }
-        }
+        carDao.getCars().forEach(System.out::println);
     }
 
     public void viewAvailableElectricCars(){
-        for (Car car : cars) {
-            if (car.getRenterName() == null && car.getEngineType() == Electric){
-                System.out.println(car);
-            }
-        }
+        carDao.getCars().stream()
+                .filter(car -> car.getRenterName() == null && car.getEngineType() == ELECTRIC)
+                .forEach(System.out::println);
     }
 
     public Car findCarById(UUID id) {
-        for (Car car : cars) {
-            if (car.getId().equals(id)){
-                return car;
-            }
-        }
+        Stream<Car> car = carDao.getCars().stream()
+                .filter(c -> c.getId().equals(id));
 
-        return null;
+        return car.findFirst().orElse(null);
     }
 
     public void setRenterName(String renterName, UUID id) {
-        for (Car car : cars) {
-            if (car.getId().equals(id)) {
-                car.setRenterName(renterName);
-            }
-        }
+        findCarById(id).setRenterName(renterName);
     }
 
     public void printAllCarsWithOwner(String owner) {
-        for (Car car : cars) {
-            if (owner.equalsIgnoreCase(car.getRenterName())) {
-                System.out.println(car);
-            }
-        }
+        carDao.getCars().stream()
+                .filter(car -> car.getRenterName().equalsIgnoreCase(owner))
+                .forEach(System.out::println);
     }
 }

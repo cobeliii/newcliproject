@@ -8,6 +8,8 @@ import static com.cobeliii.car.EngineType.ELECTRIC;
 
 public class CarService {
     private final CarDao carDao;
+    private final List<Car> cars;
+    private final CarDataAccessService data = new CarDataAccessService();
 
     public CarService(CarDao carDao) {
         this.carDao = carDao;

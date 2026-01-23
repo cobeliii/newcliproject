@@ -6,8 +6,6 @@ import com.cobeliii.user.User;
 import com.cobeliii.user.UserService;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Scanner;
 import java.util.UUID;
 
 public class BookingService {
@@ -29,17 +27,17 @@ public class BookingService {
         bookingDao.getBookings().forEach(System.out::println);
     }
 
-    public void addBooking(UUID carId, UUID userId) {
+    public boolean addBooking(UUID carId , UUID userId) {
         Car car = carService.findCarById(carId);
         if (car == null) {
             System.out.println("Car not found");
-            return;
+            return false;
         }
 
         User user = userService.findUserById(userId);
         if (user == null) {
             System.out.println("User not found");
-            return;
+            return false;
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -47,6 +45,8 @@ public class BookingService {
         var booking = bookingDao.saveBooking(newBooking);
         carService.setRenterName(user.getName(), carId);
         System.out.println("Booking added: " + booking);
+
+        return true;
     }
 
     public void viewAllUserBookedCars(User user) {

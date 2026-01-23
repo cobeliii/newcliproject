@@ -14,9 +14,9 @@ public class UserService {
         userDao.getUsers().forEach(System.out::println);
     }
 
-    public User findUserById(UUID id) {
+    public User findUserById(UUID userId) {
         Stream<User> user = userDao.getUsers().stream()
-                .filter(u -> u.getId().equals(id));
+                .filter(u -> u.getId().equals(userId));
 
         return user.findFirst().orElse(null);
     }

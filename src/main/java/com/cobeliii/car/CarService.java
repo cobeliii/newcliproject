@@ -1,6 +1,6 @@
 package com.cobeliii.car;
 
-import java.util.List;
+
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -14,7 +14,9 @@ public class CarService {
     }
 
     public void viewAvailableCars(){
-        carDao.getCars().forEach(System.out::println);
+        carDao.getCars().stream()
+                .filter(car -> car.getRenterName() == null)
+                .forEach(System.out::println);
     }
 
     public void viewAvailableElectricCars(){
@@ -25,7 +27,7 @@ public class CarService {
 
     public Car findCarById(UUID id) {
         Stream<Car> car = carDao.getCars().stream()
-                .filter(c -> c.getId().equals(id));
+                .filter(c -> id.equals(c.getId()));
 
         return car.findFirst().orElse(null);
     }
@@ -34,9 +36,10 @@ public class CarService {
         findCarById(id).setRenterName(renterName);
     }
 
+
     public void printAllCarsWithOwner(String owner) {
         carDao.getCars().stream()
-                .filter(car -> car.getRenterName().equalsIgnoreCase(owner))
+                .filter(car -> owner.equalsIgnoreCase(car.getRenterName()))
                 .forEach(System.out::println);
     }
 }

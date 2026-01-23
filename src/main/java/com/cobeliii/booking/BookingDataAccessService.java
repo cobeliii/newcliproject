@@ -12,8 +12,8 @@ public class BookingDataAccessService implements BookingDao{
     }
 
     @Override
-    public Booking saveBooking(Booking booking) {
+    public boolean saveBooking(Booking booking) {
         bookings.add(booking);
-        return booking;
+        return true;
     }
 }

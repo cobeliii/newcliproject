@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface BookingDao {
     List<Booking> getBookings();
-    Booking saveBooking(Booking booking);
+    boolean saveBooking(Booking booking);
 }

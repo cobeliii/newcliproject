@@ -1,27 +1,51 @@
+import com.cobeliii.booking.BookingDataAccessService;
 import com.cobeliii.booking.BookingService;
+import com.cobeliii.car.CarDao;
+import com.cobeliii.car.CarDataAccessService;
 import com.cobeliii.car.CarService;
+import com.cobeliii.user.User;
+import com.cobeliii.user.UserDao;
+import com.cobeliii.user.UserDataAccessService;
 import com.cobeliii.user.UserService;
 
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Main {
     private static Scanner scanner = new Scanner(System.in);
 
 
     public static void main(String[] args) {
-        CarService carService = new CarService();
-        UserService userService = new UserService();
-        BookingService bookingService = new BookingService(userService, carService);
+        System.out.println();
+        System.out.println("Welcome to Car Booking System!");
+        CarDao carDao = new CarDataAccessService();
+        CarService carService = new CarService(carDao);
+        UserDao userDao = new UserDataAccessService();
+        UserService userService = new UserService(userDao);
+        BookingDataAccessService bookingDao = new BookingDataAccessService();
 
-        menu();
-        int choice = scanner.nextInt();
-        while (choice != 7) {
+        BookingService bookingService = new BookingService(userService, carService, bookingDao);
+        while (true) {
+            menu();
+            int choice = scanner.nextInt();
             switch (choice) {
                 case 1:
-                    bookingService.addBooking();
+                    scanner.nextLine();
+                    carService.viewAvailableCars();
+                    System.out.println("Enter car id: ");
+                    UUID carId = UUID.fromString(scanner.nextLine());
+                    userService.printUsers();
+                    System.out.println("Enter user id:");
+                    UUID userId = UUID.fromString(scanner.nextLine());
+                    bookingService.addBooking(carId, userId);
                     break;
                 case 2:
-                    bookingService.viewAllUserBookedCars();
+                    scanner.nextLine();
+                    userService.printUsers();
+                    System.out.println("Enter user name: ");
+                    String userName = scanner.nextLine();
+                    User user = userService.findUserByName(userName);
+                    bookingService.viewAllUserBookedCars(user);
                     break;
                 case 3:
                     bookingService.printBookings();
@@ -38,13 +62,12 @@ public class Main {
                     break;
                 case 7:
                     System.out.println("Goodbye!");
-                    break;
+                    return;
                 default:
                     System.out.println("Invalid choice");
                     break;
             }
-            menu();
-            choice = scanner.nextInt();
+
         }
 
     }

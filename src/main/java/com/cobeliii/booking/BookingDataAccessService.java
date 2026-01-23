@@ -10,4 +10,12 @@ public class BookingDataAccessService implements BookingDao{
     public List<Booking> getBookings() {
         return bookings;
     }
+streams
+
+    @Override
+    public boolean saveBooking(Booking booking) {
+        bookings.add(booking);
+        return true;
+    }
+ main
 }

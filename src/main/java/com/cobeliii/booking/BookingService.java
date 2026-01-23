@@ -6,6 +6,14 @@ import com.cobeliii.user.User;
 import com.cobeliii.user.UserService;
 
 import java.time.LocalDateTime;
+ streams
+import java.util.UUID;
+
+public class BookingService {
+    private final UserService userService;
+    private final CarService carService;
+    private final BookingDao bookingDao;
+
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
@@ -17,14 +25,20 @@ public class BookingService {
     private final BookingDataAccessService data = new BookingDataAccessService();
 
 
-    public BookingService(UserService userService, CarService carService) {
-        this.bookings = data.getBookings();
+
+    public BookingService(UserService userService,
+                          CarService carService,
+                          BookingDao bookingDao) {
+        this.bookingDao = bookingDao;
         this.userService = userService;
         this.carService = carService;
 
     }
 
     public void printBookings() {
+
+        bookingDao.getBookings().forEach(System.out::println);
+
         int numberOfNullBookings = 0;
         for (Booking booking : bookings) {
             if(booking == null) {
@@ -41,26 +55,20 @@ public class BookingService {
                 }
             }
         }
+
     }
 
-    public void addBooking() {
-        Scanner scanner = new Scanner(System.in);
-        carService.viewAvailableCars();
-        System.out.println("Enter car id: ");
-        UUID carId = UUID.fromString(scanner.nextLine());
-        Car carById = carService.findCarById(carId);
-        if (carById == null) {
+    public boolean addBooking(UUID carId , UUID userId) {
+        Car car = carService.findCarById(carId);
+        if (car == null) {
             System.out.println("Car not found");
-            return;
+            return false;
         }
 
-        userService.printUsers();
-        System.out.println("Enter user id:");
-        UUID userId = UUID.fromString(scanner.nextLine());
-        User userById = userService.findUserById(userId);
-        if (userById == null) {
+        User user = userService.findUserById(userId);
+        if (user == null) {
             System.out.println("User not found");
-            return;
+            return false;
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -73,17 +81,16 @@ public class BookingService {
         System.out.println("Booking added");
     }
 
-    public void viewAllUserBookedCars() {
-        Scanner scanner = new Scanner(System.in);
-        userService.printUsers();
-        System.out.println("Enter user name: ");
-        String userName = scanner.nextLine();
-        User userByName = userService.findUserByName(userName);
-        if (userByName == null) {
+    public void viewAllUserBookedCars(User user) {
+
+        if (user == null) {
             System.out.println("User not found");
             return;
         }
 
+        bookingDao.getBookings().forEach(booking -> {
+            if (booking.getUser().equals(user)) {
+                System.out.println(booking.getCar());
 
         for (Booking booking : bookings) {
             try {
@@ -93,6 +100,6 @@ public class BookingService {
             } catch (Exception e) {
                 System.out.print("");
             }
-        }
+        });
     }
 }

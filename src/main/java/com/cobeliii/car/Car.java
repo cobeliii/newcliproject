@@ -9,12 +9,22 @@ public class Car {
     private EngineType engineType;
     private String renterName;
 
-    public Car(UUID id, String brand, String model, EngineType engineType) {
+    public Car(String brand, String model, EngineType engineType) {
         this.id = UUID.randomUUID();
         this.brand = brand;
         this.model = model;
         this.engineType = engineType;
         this.renterName = null;
+    }
+
+
+
+    public Car( String brand, String model, EngineType engineType, String renterName) {
+        this.id = UUID.randomUUID();
+        this.brand = brand;
+        this.model = model;
+        this.engineType = engineType;
+        this.renterName = renterName;
     }
 
     public UUID getId() {

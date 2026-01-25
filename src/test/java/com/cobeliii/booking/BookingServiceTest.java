@@ -1,10 +1,12 @@
 package com.cobeliii.booking;
 
 import com.cobeliii.car.Car;
+import com.cobeliii.car.CarDao;
 import com.cobeliii.car.CarService;
 import com.cobeliii.car.EngineType;
 import com.cobeliii.user.User;
 import com.cobeliii.user.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -12,7 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,12 +27,21 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BookingServiceTest {
 
+    public static final LocalDateTime NOW = LocalDateTime.of(2020, 1, 1, 0, 0);
     @Mock
     private BookingDao bookingDao;
     @Mock
     private CarService carService;
     @Mock
     private UserService userService;
+    @Mock
+    private Clock clock;
+
+    @BeforeEach
+    void setUp() {
+        when(clock.instant()).thenReturn(NOW.toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(ZoneId.of("Z"));
+    }
 
     @InjectMocks
     private BookingService underTest;
@@ -41,8 +55,8 @@ class BookingServiceTest {
         );
 
         when(bookingDao.getBookings()).thenReturn(bookings);
-        underTest.printBookings();
-        verify(bookingDao).getBookings();
+        var expected = underTest.printBookings();
+        assertThat(expected).isEqualTo(bookings);
     }
 
     @Test
@@ -59,9 +73,6 @@ class BookingServiceTest {
 
         boolean actual = underTest.addBooking(carId, userId);
 
-        verify(carService).findCarById(carId);
-        verify(userService).findUserById(userId);
-
         ArgumentCaptor<Booking> bookingCaptor = ArgumentCaptor.forClass(Booking.class);
         verify(bookingDao).saveBooking(bookingCaptor.capture());
 
@@ -69,7 +80,8 @@ class BookingServiceTest {
 
         assertThat(capturedBooking.getCar()).isEqualTo(car);
         assertThat(capturedBooking.getUser()).isEqualTo(user);
-        assertThat(capturedBooking.getBookingTime()).isNotNull();
+        assertThat(capturedBooking.getBookingTime()).isEqualTo(NOW);
+        System.out.println(capturedBooking.getBookingTime());
 
         verify(carService).setRenterName(user.getName(), carId);
         verifyNoMoreInteractions(carService, userService, bookingDao);

@@ -8,6 +8,7 @@ import com.cobeliii.user.UserDao;
 import com.cobeliii.user.UserDataAccessService;
 import com.cobeliii.user.UserService;
 
+import java.time.Clock;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -23,15 +24,16 @@ public class Main {
         UserDao userDao = new UserDataAccessService();
         UserService userService = new UserService(userDao);
         BookingDataAccessService bookingDao = new BookingDataAccessService();
+        Clock clock = Clock.systemDefaultZone();
 
-        BookingService bookingService = new BookingService(userService, carService, bookingDao);
+        BookingService bookingService = new BookingService(userService, carService, bookingDao, clock);
         while (true) {
             menu();
             int choice = scanner.nextInt();
             switch (choice) {
                 case 1:
                     scanner.nextLine();
-                    carService.viewAvailableCars();
+                    carService.viewAvailableCars().forEach(System.out::println);
                     System.out.println("Enter car id: ");
                     UUID carId = UUID.fromString(scanner.nextLine());
                     userService.printUsers();

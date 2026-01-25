@@ -8,9 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.UUID;
 
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,11 +55,21 @@ class CarServiceTest {
     }
 
     @Test
+    void itShouldNotFindCarById(){
+        Car car = new Car("Tesla", "Model 3", EngineType.ELECTRIC);
+        when(carDao.getCars()).thenReturn(List.of(car));
+        var actual = underTest.findCarById(UUID.randomUUID());
+        assertThat(actual).isNull();
+    }
+
+    @Test
     void itShouldSetRenterName(){
         Car car = new Car("Tesla", "Model 3", EngineType.ELECTRIC);
         when(carDao.getCars()).thenReturn(List.of(car));
         underTest.setRenterName("Jorge", car.getId());
-        verify(carDao).getCars();
+
+        var actual = underTest.findCarById(car.getId()).getRenterName();
+        assertThat(actual).isEqualTo("Jorge");
     }
 
     @Test

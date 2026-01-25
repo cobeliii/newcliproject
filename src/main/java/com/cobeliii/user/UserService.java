@@ -14,18 +14,20 @@ public class UserService {
         userDao.getUsers().forEach(System.out::println);
     }
 
+    // TODO: implement exceptions and throw instead of nulls
     public User findUserById(UUID userId) {
-        Stream<User> user = userDao.getUsers().stream()
-                .filter(u -> u.getId().equals(userId));
-
-        return user.findFirst().orElse(null);
+        return  userDao.getUsers().stream()
+                .filter(u -> u.getId().equals(userId))
+                .findFirst()
+                .orElse(null);
     }
 
+
+    // TODO: same here
     public User findUserByName(String name) {
-
-        Stream<User> user = userDao.getUsers().stream()
-                .filter(u -> u.getName().equalsIgnoreCase(name));
-
-        return user.findFirst().orElse(null);
+        return userDao.getUsers().stream()
+                .filter(u -> u.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
     }
 }

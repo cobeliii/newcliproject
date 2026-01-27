@@ -21,6 +21,13 @@ public class Booking {
         this.bookingTime = bookingTime;
     }
 
+    public Booking(UUID bookingId, User user, Car car) {
+        this.bookingId = bookingId;
+        this.user = user;
+        this.car = car;
+        this.bookingTime = LocalDateTime.now();
+    }
+
     public UUID getBookingId() {
         return bookingId;
     }

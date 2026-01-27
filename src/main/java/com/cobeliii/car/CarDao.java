@@ -1,9 +1,10 @@
 package com.cobeliii.car;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CarDao {
     List<Car> getCars();
-    // getCarById(UUID id);
-    // electicCars
+    Car getCarById(UUID id);
+
 }

@@ -2,13 +2,14 @@ package com.cobeliii.booking;
 
 import com.cobeliii.car.Car;
 import com.cobeliii.car.CarService;
+import com.cobeliii.exceptions.CarAlreadyTakenObject;
+import com.cobeliii.exceptions.ObjectNotFoundException;
 import com.cobeliii.user.User;
 import com.cobeliii.user.UserService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class BookingService {
@@ -29,24 +30,40 @@ public class BookingService {
         this.clock = clock;
     }
 
-    public List<Booking> printBookings() {
+    public List<Booking> getBookings() {
         return bookingDao.getBookings();
     }
 
     // TODO: delete booking and test
 
+
+
+    public void deleteBooking(UUID bookingId) {
+        Booking bookingById = bookingDao.findBookingById(bookingId);
+
+        if (bookingById == null) {
+            throw new ObjectNotFoundException("Booking not found");
+        }
+
+        bookingDao.deleteBooking(bookingById);
+
+    }
+
     public boolean addBooking(UUID carId, UUID userId) {
         Car car = carService.findCarById(carId);
+
+        if (car == null) throw new ObjectNotFoundException("Car not found");
+
         // TODO: what if the car is taken
-        if (car == null) {
-            System.out.println("Car not found");
-            return false;
+
+        if (car.getRenterName() != null) {
+            throw new CarAlreadyTakenObject("Car is already taken");
         }
+
 
         User user = userService.findUserById(userId);
         if (user == null) {
-            System.out.println("User not found");
-            return false;
+            throw new ObjectNotFoundException("User not found");
         }
 
         LocalDateTime now = LocalDateTime.now(clock);
@@ -62,14 +79,12 @@ public class BookingService {
         return true;
     }
 
-    // change this to return bookedCars
-    public void viewAllUserBookedCars(User user) {
-        Optional.ofNullable(user)
-                .ifPresentOrElse((u) -> {
-                    bookingDao.getBookings()
+    //todo: change this to return bookedCars
+    public List<Booking> getAllUserBookedCars(User user) {
+        return bookingDao.getBookings()
                             .stream()
-                            .filter(booking -> booking.getUser().equals(u))
-                            .forEach(System.out::println);
-                }, () -> System.out.println("User not found"));
+                            .filter(booking -> booking.getUser().equals(user))
+                            .toList();
+
     }
 }

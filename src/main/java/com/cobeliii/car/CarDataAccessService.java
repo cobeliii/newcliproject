@@ -1,7 +1,10 @@
 package com.cobeliii.car;
 
+import com.cobeliii.exceptions.ObjectNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 public class CarDataAccessService implements CarDao{
@@ -19,5 +22,12 @@ public class CarDataAccessService implements CarDao{
     @Override
     public List<Car> getCars() {
         return cars;
+    }
+
+    @Override
+    public Car getCarById(UUID id) {
+        return cars.stream().filter(car -> car.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new ObjectNotFoundException("Car not found"));
     }
 }

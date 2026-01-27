@@ -69,7 +69,7 @@ public class Main {
                     break;
                 case 7:
                     System.out.println("Goodbye!");
-                    break;
+                    return;
                 default:
                     System.out.println("Invalid choice");
                     break;

@@ -9,6 +9,14 @@ import com.cobeliii.user.UserService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+ streams
+import java.util.UUID;
+
+public class BookingService {
+    private final UserService userService;
+    private final CarService carService;
+    private final BookingDao bookingDao;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -60,6 +68,9 @@ public class BookingService {
             throw new CarAlreadyTakenObject("Car is already taken");
         }
 
+        bookingDao.getBookings().forEach(booking -> {
+            if (booking.getUser().equals(user)) {
+                System.out.println(booking.getCar());
 
         User user = userService.findUserById(userId);
         if (user == null) {

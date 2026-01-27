@@ -4,6 +4,7 @@ import com.cobeliii.exceptions.ObjectNotFoundException;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class UserService {
     private final UserDao userDao;

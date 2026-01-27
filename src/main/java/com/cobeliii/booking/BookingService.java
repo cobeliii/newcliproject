@@ -2,9 +2,12 @@ package com.cobeliii.booking;
 
 import com.cobeliii.car.Car;
 import com.cobeliii.car.CarService;
+import com.cobeliii.exceptions.CarAlreadyTakenObject;
+import com.cobeliii.exceptions.ObjectNotFoundException;
 import com.cobeliii.user.User;
 import com.cobeliii.user.UserService;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
  streams
 import java.util.UUID;
@@ -15,91 +18,84 @@ public class BookingService {
     private final BookingDao bookingDao;
 
 import java.util.List;
-import java.util.Scanner;
 import java.util.UUID;
 
 public class BookingService {
-    private final List<Booking> bookings;
     private final UserService userService;
     private final CarService carService;
-    private final BookingDataAccessService data = new BookingDataAccessService();
-
+    private final BookingDao bookingDao;
+    private final Clock clock;
 
 
     public BookingService(UserService userService,
                           CarService carService,
-                          BookingDao bookingDao) {
+                          BookingDao bookingDao,
+                          Clock clock) {
         this.bookingDao = bookingDao;
         this.userService = userService;
         this.carService = carService;
 
+        this.clock = clock;
     }
 
-    public void printBookings() {
+    public List<Booking> getBookings() {
+        return bookingDao.getBookings();
+    }
 
-        bookingDao.getBookings().forEach(System.out::println);
+    // TODO: delete booking and test
 
-        int numberOfNullBookings = 0;
-        for (Booking booking : bookings) {
-            if(booking == null) {
-                numberOfNullBookings++;
-            }
+
+
+    public void deleteBooking(UUID bookingId) {
+        Booking bookingById = bookingDao.findBookingById(bookingId);
+
+        if (bookingById == null) {
+            throw new ObjectNotFoundException("Booking not found");
         }
 
-        if(numberOfNullBookings == bookings.size()) {
-            System.out.println("No bookings found");
-        }else{
-            for (Booking booking : bookings) {
-                if (booking != null) {
-                    System.out.println(booking);
-                }
-            }
-        }
+        bookingDao.deleteBooking(bookingById);
 
     }
 
-    public boolean addBooking(UUID carId , UUID userId) {
+    public boolean addBooking(UUID carId, UUID userId) {
         Car car = carService.findCarById(carId);
-        if (car == null) {
-            System.out.println("Car not found");
-            return false;
-        }
 
-        User user = userService.findUserById(userId);
-        if (user == null) {
-            System.out.println("User not found");
-            return false;
-        }
+        if (car == null) throw new ObjectNotFoundException("Car not found");
 
-        LocalDateTime now = LocalDateTime.now();
-        Booking newBooking = new Booking(userById, carById, now);
+        // TODO: what if the car is taken
 
-        bookings.add(newBooking);
-
-        carService.setRenterName(userById.getName(), carId);
-
-        System.out.println("Booking added");
-    }
-
-    public void viewAllUserBookedCars(User user) {
-
-        if (user == null) {
-            System.out.println("User not found");
-            return;
+        if (car.getRenterName() != null) {
+            throw new CarAlreadyTakenObject("Car is already taken");
         }
 
         bookingDao.getBookings().forEach(booking -> {
             if (booking.getUser().equals(user)) {
                 System.out.println(booking.getCar());
 
-        for (Booking booking : bookings) {
-            try {
-                if (booking.getUser().equals(userByName)) {
-                    System.out.println(booking.getCar());
-                }
-            } catch (Exception e) {
-                System.out.print("");
-            }
-        });
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            throw new ObjectNotFoundException("User not found");
+        }
+
+        LocalDateTime now = LocalDateTime.now(clock);
+        Booking newBooking = new Booking(user, car, now);
+        // todo: what if the booking fails (done) create a test for it
+        var isBooked = bookingDao.saveBooking(newBooking);
+        if (!isBooked) {
+            return false;
+        }
+        carService.setRenterName(user.getName(), carId);
+        System.out.println("Booking added: " + isBooked);
+
+        return true;
+    }
+
+    //todo: change this to return bookedCars
+    public List<Booking> getAllUserBookedCars(User user) {
+        return bookingDao.getBookings()
+                            .stream()
+                            .filter(booking -> booking.getUser().equals(user))
+                            .toList();
+
     }
 }

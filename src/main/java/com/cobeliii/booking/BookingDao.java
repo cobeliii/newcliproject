@@ -1,10 +1,11 @@
 package com.cobeliii.booking;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface BookingDao {
     List<Booking> getBookings();
- streams
     boolean saveBooking(Booking booking);
- main
+    void deleteBooking(Booking booking);
+    Booking findBookingById(UUID bookingId);
 }

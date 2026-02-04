@@ -11,8 +11,6 @@ import static com.cobeliii.car.EngineType.ELECTRIC;
 
 public class CarService {
     private final CarDao carDao;
-    private final List<Car> cars;
-    private final CarDataAccessService data = new CarDataAccessService();
 
     public CarService(CarDao carDao) {
         this.carDao = carDao;
@@ -31,30 +29,17 @@ public class CarService {
                 .toList();
     }
 
-    // TODO: fix this method and excepitons
+    // TODO: fix this method and exceptions
     public Car findCarById(UUID id) {
-        return carDao.getCars().stream()
-                .filter(c -> id.equals(c.getId()))
-                .findFirst().orElseThrow(() -> new ObjectNotFoundException("Car not found"));
+        return carDao.getCarById(id);
 
     }
 
     // TODO: what is car id does not exit? maybe Optionals
     public void setRenterName(String renterName, UUID id) {
         Car car = carDao.getCarById(id);
-        if (car == null) {
-            throw new ObjectNotFoundException("Car not found");
-        }
 
         car.setRenterName(renterName);
     }
 
-
-    //Do not need this class
-    // TODO: return cas with owner
-//    public List<Car> getAllCarsWithOwner(String owner) {
-//        return carDao.getCars().stream()
-//                .filter(car -> owner.equalsIgnoreCase(car.getRenterName()))
-//                .toList();
-//    }
 }

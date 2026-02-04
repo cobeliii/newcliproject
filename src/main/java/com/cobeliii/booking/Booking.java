@@ -8,14 +8,14 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Booking {
-    private UUID bookingId;
+    private final UUID bookingId;
     private User user;
     private Car car;
     private LocalDateTime bookingTime;
 
 
-    public Booking(User user, Car car, LocalDateTime bookingTime) {
-        this.bookingId = UUID.randomUUID();
+    public Booking(UUID bookingId, User user, Car car, LocalDateTime bookingTime) {
+        this.bookingId = bookingId;
         this.user = user;
         this.car = car;
         this.bookingTime = bookingTime;
@@ -30,10 +30,6 @@ public class Booking {
 
     public UUID getBookingId() {
         return bookingId;
-    }
-
-    public void setBookingId(UUID bookingId) {
-        this.bookingId = bookingId;
     }
 
     public User getUser() {

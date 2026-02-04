@@ -11,12 +11,12 @@ public class CarDataAccessService implements CarDao{
     private static final List<Car> cars = new ArrayList<>();
 
     static {
-        cars.add(new Car( "Tesla", "Unknown", EngineType.ELECTRIC));
-        cars.add(new Car( "BMW", "Unknown", EngineType.PETROL));
-        cars.add(new Car( "Volvo", "Unknown", EngineType.PETROL));
-        cars.add(new Car( "Toyota", "Highlander", EngineType.PETROL));
-        cars.add(new Car( "Mercedes", "G63", EngineType.PETROL));
-        cars.add(new Car( "Toyota", "Camry", EngineType.ELECTRIC));
+        cars.add(new Car( UUID.randomUUID(),"Tesla", "Unknown", EngineType.ELECTRIC));
+        cars.add(new Car( UUID.randomUUID(),"BMW", "Unknown", EngineType.PETROL));
+        cars.add(new Car( UUID.randomUUID(),"Volvo", "Unknown", EngineType.PETROL));
+        cars.add(new Car( UUID.randomUUID(),"Toyota", "Highlander", EngineType.PETROL));
+        cars.add(new Car( UUID.randomUUID(),"Mercedes", "G63", EngineType.PETROL));
+        cars.add(new Car( UUID.randomUUID(),"Toyota", "Camry", EngineType.ELECTRIC));
     }
 
     @Override

@@ -17,15 +17,9 @@ public class UserService {
     }
 
     // TODO: implement exceptions and throw instead of nulls
-    public User findUserById(UUID userId) {
-        return  userDao.getUsers().stream()
-                .filter(u -> u.getId().equals(userId))
-                .findFirst()
-                .orElseThrow(()-> new ObjectNotFoundException("User not found"));
+    public User getUserById(UUID userId) {
+        return  userDao.findUserById(userId);
     }
-
-
-
 
     // TODO: same here
     public User findUserByName(String name) {

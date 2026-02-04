@@ -1,10 +1,8 @@
 package com.cobeliii.car;
 
 
-import com.cobeliii.exceptions.ObjectNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.cobeliii.car.EngineType.ELECTRIC;

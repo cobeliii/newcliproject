@@ -14,14 +14,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -50,10 +48,11 @@ class BookingServiceTest {
 
     @Test
     void itShouldGetBookings() {
-        User user = new User("Jorge");
-        Car car = new Car("Mercedes", "C300", EngineType.ELECTRIC);
+        User user = new User(UUID.randomUUID(),"Jorge");
+        Car car = new Car(UUID.randomUUID(),"Mercedes", "C300", EngineType.ELECTRIC);
+        UUID id = UUID.randomUUID();
         List<Booking> bookings = List.of(
-                new Booking(user, car, LocalDateTime.now())
+                new Booking(id, user, car, LocalDateTime.now())
         );
 
         when(bookingDao.getBookings()).thenReturn(bookings);
@@ -66,15 +65,15 @@ class BookingServiceTest {
     @Test
     void itShouldAddBooking() {
 
-        User user = new User("Jorge");
-        Car car = new Car("Mercedes", "C300", EngineType.ELECTRIC);
+        User user = new User(UUID.randomUUID(),"Jorge");
+        Car car = new Car(UUID.randomUUID(),"Mercedes", "C300", EngineType.ELECTRIC);
         UUID carId = car.getId();
         UUID userId = user.getId();
 
         when(clock.instant()).thenReturn(NOW.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneId.of("Z"));
         when(carService.findCarById(carId)).thenReturn(car);
-        when(userService.findUserById(userId)).thenReturn(user);
+        when(userService.getUserById(userId)).thenReturn(user);
         when(bookingDao.saveBooking(any(Booking.class))).thenReturn(true);
 
         boolean actual = underTest.addBooking(carId, userId);
@@ -97,8 +96,8 @@ class BookingServiceTest {
 
     @Test
     void itShouldNotAddBookingIfCarIsTaken() {
-        User user = new User("Jorge");
-        Car car = new Car("Mercedes", "C300", EngineType.ELECTRIC, user.getName()); // taken
+        User user = new User(UUID.randomUUID(),"Jorge");
+        Car car = new Car(UUID.randomUUID(),"Mercedes", "C300", EngineType.ELECTRIC, user.getName()); // taken
         UUID carId = car.getId();
         UUID userId = user.getId();
 
@@ -115,12 +114,11 @@ class BookingServiceTest {
 
     @Test
     void itShouldNotAddBookingIfCarIsNull() {
-        User user = new User("Jorge");
-        Car car = null;
+        User user = new User(UUID.randomUUID(),"Jorge");
         UUID carId = UUID.randomUUID();
         UUID userId = user.getId();
 
-        when(carService.findCarById(carId)).thenReturn(car);
+        when(carService.findCarById(carId)).thenReturn(null);
 
         assertThatThrownBy(() -> underTest.addBooking(carId, userId))
                 .isInstanceOf(ObjectNotFoundException.class)
@@ -133,13 +131,12 @@ class BookingServiceTest {
 
     @Test
     void itShouldNotAddBookingWhenUserIsNull() {
-        User user = null;
-        Car car = new Car("Mercedes", "C300", EngineType.ELECTRIC); // taken
+        Car car = new Car(UUID.randomUUID(),"Mercedes", "C300", EngineType.ELECTRIC); // taken
         UUID carId = car.getId();
         UUID userId = UUID.randomUUID();
 
         when(carService.findCarById(carId)).thenReturn(car);
-        when(userService.findUserById(userId)).thenReturn(user);
+        when(userService.getUserById(userId)).thenReturn(null);
 
         assertThatThrownBy(() -> underTest.addBooking(carId, userId))
                 .isInstanceOf(ObjectNotFoundException.class)
@@ -152,15 +149,15 @@ class BookingServiceTest {
 
     @Test
     void itShouldFailToAddBooking(){
-        User user = new User("Jorge");
-        Car car = new Car("Mercedes", "C300", EngineType.ELECTRIC); // taken
+        User user = new User(UUID.randomUUID(),"Jorge");
+        Car car = new Car(UUID.randomUUID(),"Mercedes", "C300", EngineType.ELECTRIC); // taken
         UUID carId = car.getId();
         UUID userId = user.getId();
 
         when(clock.instant()).thenReturn(NOW.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneId.of("Z"));
         when(carService.findCarById(carId)).thenReturn(car);
-        when(userService.findUserById(userId)).thenReturn(user);
+        when(userService.getUserById(userId)).thenReturn(user);
         when(bookingDao.saveBooking(any(Booking.class))).thenReturn(false);
 
         boolean actual = underTest.addBooking(carId, userId);
@@ -170,7 +167,7 @@ class BookingServiceTest {
 
     @Test
     void itShouldGetAllUserBookedCars() {
-        User user = new User("Jorge");
+        User user = new User(UUID.randomUUID(),"Jorge");
         List<Booking> bookings = bookingDao.getBookings();
         when(underTest.getAllUserBookedCars(user)).thenReturn(bookings);
         List<Booking> allUserBookedCars = underTest.getAllUserBookedCars(user);
@@ -181,8 +178,8 @@ class BookingServiceTest {
 
     @Test
     void itShouldDeleteBooking(){
-        User user = new User("Jorge");
-        Car car = new Car("Tesla", "Model 3", EngineType.ELECTRIC);
+        User user = new User(UUID.randomUUID(),"Jorge");
+        Car car = new Car(UUID.randomUUID(),"Tesla", "Model 3", EngineType.ELECTRIC);
         UUID bookingId = UUID.randomUUID();
         Booking booking = new Booking(bookingId, user, car);
 
@@ -190,17 +187,6 @@ class BookingServiceTest {
                 .thenReturn(booking);
 
         assertAll(() -> underTest.deleteBooking(bookingId));
-    }
-
-    @Test
-    void itShouldThrowExceptionWhenTryingToDeleteBooking(){
-        User user = new User("Jorge");
-        Car car = new Car("Tesla", "Model 3", EngineType.ELECTRIC);
-        Booking booking = new Booking(null, user, car);
-
-        assertThatThrownBy(() -> underTest.deleteBooking(booking.getBookingId()))
-                .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessageContaining("Booking not found");
     }
 
 

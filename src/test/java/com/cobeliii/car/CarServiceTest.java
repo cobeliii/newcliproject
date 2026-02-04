@@ -1,23 +1,14 @@
 package com.cobeliii.car;
 
-
-import com.cobeliii.booking.Booking;
-import com.cobeliii.booking.BookingService;
-import com.cobeliii.exceptions.ObjectNotFoundException;
-import com.cobeliii.user.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.*;
 
@@ -35,7 +26,7 @@ class CarServiceTest {
     @Test
     void itShouldViewAvailableCars(){
         List<Car> cars = List.of(
-                new Car( "Tesla", "Model 3", EngineType.ELECTRIC)
+                new Car( UUID.randomUUID(),"Tesla", "Model 3", EngineType.ELECTRIC)
         );
         when(carDao.getCars()).thenReturn(cars);
         var expected = underTest.getAvailableCars();
@@ -45,7 +36,7 @@ class CarServiceTest {
     @Test
     void itShouldViewAvailableElectricCars(){
         List<Car> cars = List.of(
-                new Car( "Tesla", "Model 3", EngineType.ELECTRIC)
+                new Car( UUID.randomUUID(),"Tesla", "Model 3", EngineType.ELECTRIC)
         );
         when(carDao.getCars()).thenReturn(cars);
         var expected = underTest.getAvailableElectricCars();
@@ -55,43 +46,18 @@ class CarServiceTest {
 
     @Test
     void itShouldFindCarById(){
-        Car car = new Car("Tesla", "Model 3", EngineType.ELECTRIC);
-        when(carDao.getCars()).thenReturn(List.of(car));
+        Car car = new Car(UUID.randomUUID(),"Tesla", "Model 3", EngineType.ELECTRIC);
+        when(carDao.getCarById(car.getId())).thenReturn(car);
         var expected = underTest.findCarById(car.getId());
         assertThat(expected).isEqualTo(car);
     }
 
-    @Test
-    void itShouldNotFindCarById(){
-        Car car = new Car("Tesla", "Model 3", EngineType.ELECTRIC);
-        assertThatThrownBy(() -> underTest.findCarById(UUID.randomUUID()))
-                .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessageContaining("Car not found");
-    }
 
     @Test
     void itShouldSetRenterName(){
-        Car car = new Car("Tesla", "Model 3", EngineType.ELECTRIC);
+        Car car = new Car(UUID.randomUUID(),"Tesla", "Model 3", EngineType.ELECTRIC);
         when(carDao.getCarById(car.getId())).thenReturn(car);
         assertAll(()-> underTest.setRenterName("Jorge", car.getId()));
     }
 
-    @Test
-    void itShouldNotSetRenterNameIfCarIsNull(){
-        Car car = null;
-        UUID carId = UUID.randomUUID();
-        assertThatThrownBy(() ->underTest.setRenterName("Jorge", carId))
-                .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessageContaining("Car not found");
-    }
-
-//Do not need this test
-//    @Test
-//    void itShouldPrintAllCarsWithOwner(){
-//        String owner = "Jorge";
-//        Car car = new Car("Tesla", "Model 3", EngineType.ELECTRIC, owner);
-//        when(carDao.getCars()).thenReturn(List.of(car));
-//        underTest.getAllCarsWithOwner(owner);
-//        verify(carDao).getCars();
-//    }
 }

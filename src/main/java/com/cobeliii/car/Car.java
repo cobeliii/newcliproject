@@ -1,5 +1,6 @@
 package com.cobeliii.car;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Car {
@@ -9,8 +10,8 @@ public class Car {
     private EngineType engineType;
     private String renterName;
 
-    public Car(String brand, String model, EngineType engineType) {
-        this.id = UUID.randomUUID();
+    public Car(UUID id, String brand, String model, EngineType engineType) {
+        this.id = id;
         this.brand = brand;
         this.model = model;
         this.engineType = engineType;
@@ -19,8 +20,8 @@ public class Car {
 
 
 
-    public Car( String brand, String model, EngineType engineType, String renterName) {
-        this.id = UUID.randomUUID();
+    public Car(UUID id,String brand, String model, EngineType engineType, String renterName) {
+        this.id = id;
         this.brand = brand;
         this.model = model;
         this.engineType = engineType;
@@ -65,6 +66,18 @@ public class Car {
 
     public void setRenterName(String renterName) {
         this.renterName = renterName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Car car = (Car) o;
+        return Objects.equals(id, car.id) && Objects.equals(brand, car.brand) && Objects.equals(model, car.model) && engineType == car.engineType && Objects.equals(renterName, car.renterName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, brand, model, engineType, renterName);
     }
 
     @Override

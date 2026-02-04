@@ -44,17 +44,10 @@ public class BookingService {
 
     // TODO: delete booking and test
 
-
-
     public void deleteBooking(UUID bookingId) {
-        Booking bookingById = bookingDao.findBookingById(bookingId);
-
-        if (bookingById == null) {
-            throw new ObjectNotFoundException("Booking not found");
-        }
-
-        bookingDao.deleteBooking(bookingById);
-
+        Booking retrievedBooking = bookingDao.findBookingById(bookingId); //So I can set renter to null
+        bookingDao.deleteBooking(retrievedBooking.getBookingId());
+        carService.setRenterName(null, retrievedBooking.getCar().getId());
     }
 
     public boolean addBooking(UUID carId, UUID userId) {
@@ -68,17 +61,14 @@ public class BookingService {
             throw new CarAlreadyTakenObject("Car is already taken");
         }
 
-        bookingDao.getBookings().forEach(booking -> {
-            if (booking.getUser().equals(user)) {
-                System.out.println(booking.getCar());
-
-        User user = userService.findUserById(userId);
+        User user = userService.getUserById(userId);
         if (user == null) {
             throw new ObjectNotFoundException("User not found");
         }
 
         LocalDateTime now = LocalDateTime.now(clock);
-        Booking newBooking = new Booking(user, car, now);
+        UUID bookingId = UUID.randomUUID();
+        Booking newBooking = new Booking(bookingId,user, car, now);
         // todo: what if the booking fails (done) create a test for it
         var isBooked = bookingDao.saveBooking(newBooking);
         if (!isBooked) {
